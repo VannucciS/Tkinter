@@ -40,22 +40,36 @@ def save():
 	# Create a cursor or instantiate
 	c = connection.cursor()
 
-	 Insert  Into Table
-	c.execute("UPDATE INTO adressBook VALUES (:fName, :lName, :address, :city, :state, :phoneNumber, :zipcode, :photo)",
-			{ 
-				'fName' : fNameUpdate.get(),
-				'lName' : lNameUpdate.get(),
-				'address' : addressUpdate.get(),
-				'city' : cityUpdate.get(),
-				'state' : stateUpdate.get(),
-				'phoneNumber' : phoneNumberUpdate.get(),
- 				'zipcode' : zipcodeUpdate.get(),
- 				'photo' : photoUpdate.get()
-			})
 
+
+	# Insert  Into Table
+	c.execute("""UPDATE adressBook SET 
+		firstName = :first, 
+		lastName = :last,
+		adress = :address,
+		city = :city, 
+		state = :state, 
+		phoneNumber = :phoneNumber,
+		photo = :photo,
+		zipcode = :zipcode
+
+		WHERE oid = :oid""",
+
+		{
+		'first' : fNameUpdate.get(),
+		'last' : lNameUpdate.get(),
+		'address' : addressUpdate.get(),
+		'city' : cityUpdate.get(),
+		'state' : stateUpdate.get(),
+		'phoneNumber' : phoneNumberUpdate.get(),
+		'photo' : photoUpdate.get(),
+		'zipcode' : zipcodeUpdate.get(),
+		'oid' : recordId
+		}
+			)
 	# Commit changes
 	connection.commit()
-	# Close connection
+	# Close connection	
 	connection.close()
 
 	# Clear the text box
@@ -80,14 +94,37 @@ def update():
 	# Create a cursor or instantiate
 	c = connection.cursor()
 
+	global recordId
 	recordId = deleteBox.get()
 	# Query the database
-	c.execute("DELETE FROM adressBook WHERE oid = " + recordId)
+	c.execute("SELECT * FROM adressBook WHERE oid = " + recordId)
 
 	# It can be fetchall = bring all records , fetchone = bring only one record, fetchmany(50) = bring the number written
 	records = c.fetchall()
 	#print(records)
-	
+	'''
+	# Loop thru Results
+	for record in records:
+		fNameUpdate.insert(0, record[0])
+		lNameUpdate.insert(0, record[1])
+		addressUpdate.insert(0,record[2])
+		cityUpdate.insert(0,record[3])
+		stateUpdate.insert(0,record[4])
+		phoneNumberUpdate.insert(0,record[5])
+		zipcodeUpdate.insert(0,record[6])
+		photoUpdate.insert(0,record[7])
+
+	'''
+	# Create Global Variables for text box names
+	global fNameUpdate
+	global lNameUpdate
+	global addressUpdate
+	global cityUpdate
+	global stateUpdate
+	global phoneNumberUpdate
+	global zipcodeUpdate
+	global photoUpdate
+
 	# Create the text boxes
 	fNameUpdate = Entry(update, width = 30)
 	fNameUpdate.grid(row = 0, column = 1, padx = 20, pady = (20,0))
